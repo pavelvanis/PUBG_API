@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player select</title>
+</head>
+
+<body>
+
+    <input type="text" id="search" placeholder="Search player">
+    <button type="submit" title="Submit" id="submit" onclick="sendPlayer()">Search</button>
+
+    <script>
+
+        console.log('Server is on')
+
+        const submit = document.getElementById('submit')
+        const search = document.getElementById('search')
+
+        search.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') sendPlayer();
+            else return
+        })
+
+        function sendPlayer() {
+            var player
+            checkPlayer(res => {
+                player = res
+                console.log(`Valid player: ${player}`)
+            })
+            if (player !== null) {
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", `http://localhost:3000/player?player=${player}`, true);
+                xhr.send();
+            }
+        }
+
+        function checkPlayer(callback) {
+            let player = search.value
+            if (player.length < 3 || player === null) {
+                alert('Not valid player')
+                callback(null)
+            } else {
+                callback(player)
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>
