@@ -11,29 +11,53 @@
 <body>
 
     <input type="text" id="search" placeholder="Search player">
-    <button type="submit" title="Submit" id="submit" onclick="sendPlayer()">Search</button>
+    <input type="number" id="season" value="21" min="1" max="21" placeholder="season">
+    <button type="submit" title="Submit" id="submit" onclick="sendData()">Search</button><br><br>
+    <button id="ranked" value="ranked" class="mode">RANKED</button>
+    <button id="public" value="public" class="mode">PUBLIC</button>
+    <button id="overall" value="overall" class="mode">OVERALL</button>
 
     <script>
 
         console.log('Server is on')
 
-        const submit = document.getElementById('submit')
-        const search = document.getElementById('search')
+        const submit = document.getElementById('submit');
+        const search = document.getElementById('search');
+        const seasonInput = document.getElementById('season');
+        const modes = document.querySelectorAll('.mode')
+
+        modes.addEventListener('submit', function(e) {
+            console.log
+        })
 
         search.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter') sendPlayer();
+            if (e.key === 'Enter') sendData();
             else return
         })
 
-        function sendPlayer() {
+        function sendData() {
             var player
+            const season = seasonInput.value
             checkPlayer(res => {
                 player = res
                 console.log(`Valid player: ${player}`)
+                console.log(`Season: ${season}`)
             })
             if (player !== null) {
                 var xhr = new XMLHttpRequest();
-                xhr.open("GET", `http://localhost:3000/player?player=${player}`, true);
+                xhr.open("GET", `http://localhost:3000/player?p=${player}&s=${season}`, true);
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        var data = xhr.responseText;
+                        document.createElement('div').textContent = data;
+                        console.log(`Get response`)
+                        console.log(data);
+                        if(data === 'false') console.log(`Input player does not exist!`)
+                    }
+                    if(xhr.readyState === 4 && xhr.status === 404){
+                        console.log(`'${player}' does not exist`)
+                    }
+                };
                 xhr.send();
             }
         }
